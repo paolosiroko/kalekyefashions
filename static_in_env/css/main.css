@@ -80,6 +80,29 @@ Input, textarea : 14px/1.6 '', Arial, sans-serif;
   src: url('../fonts/poppins/Poppins-Black.ttf'); 
 }
 
+.mobile-menu {
+  display: none; /* Hidden by default, shown on mobile via media query */
+}
+.item-menu-mobile {
+  list-style: none;
+}
+.item-menu-mobile .sub_menu {
+  padding-left: 20px; /* Indent subcategories */
+}
+.item-menu-mobile a {
+  display: block;
+  padding: 8px 15px;
+  color: #333;
+}
+@media (max-width: 768px) {
+  .wrap_menu {
+      display: none; /* Hide desktop menu on mobile */
+  }
+  .mobile-menu {
+      display: block; /* Show mobile menu */
+  }
+}
+
 /*[ RESTYLE TAG ]
 ///////////////////////////////////////////////////////////
 */

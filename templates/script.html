@@ -1,5 +1,24 @@
 {% load static %}
 
+<script>
+  // Toggle mobile menu
+  document.querySelector('.btn-show-menu-mobile').addEventListener('click', () => {
+      const sideMenu = document.querySelector('.wrap-side-menu');
+      sideMenu.classList.toggle('active');
+  });
+
+  // Toggle submenus in mobile menu
+  document.querySelectorAll('.arrow-main-menu').forEach(arrow => {
+      arrow.addEventListener('click', (e) => {
+          e.preventDefault();
+          const submenu = arrow.previousElementSibling;
+          submenu.classList.toggle('active');
+          arrow.classList.toggle('fa-angle-right');
+          arrow.classList.toggle('fa-angle-down');
+      });
+  });
+</script>
+
 <script
   type="text/javascript"
   src="{% static 'vendor/jquery/jquery-3.2.1.min.js' %}"

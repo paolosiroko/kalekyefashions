@@ -8,7 +8,7 @@ from django.views.generic import ListView, DetailView, View
 from django.shortcuts import redirect
 from django.utils import timezone
 from .forms import CheckoutForm, CouponForm, RefundForm
-from .models import Item, OrderItem, Order, BillingAddress, Payment, Coupon, Refund, Category
+from .models import Item, OrderItem, Order, BillingAddress, Payment, Coupon, Refund, Category, Slide
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 
@@ -110,6 +110,14 @@ class HomeView(ListView):
     queryset = Item.objects.filter(is_active=True)
     context_object_name = 'items'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Add all active categories (top-level and subcategories) for banners
+        context['banner_categories'] = Category.objects.filter(is_active=True).order_by('title')
+        # Add active slides
+        context['slides'] = Slide.objects.filter(is_active=True).order_by('pk')
+        return context
+
 
 class OrderSummaryView(LoginRequiredMixin, View):
     def get(self, *args, **kwargs):
@@ -125,9 +133,10 @@ class OrderSummaryView(LoginRequiredMixin, View):
 
 
 class ShopView(ListView):
-    model = Item
-    paginate_by = 6
     template_name = "shop.html"
+    queryset = Item.objects.filter(is_active=True)
+    context_object_name = 'object_list'
+    paginate_by = 12
 
 
 class ItemDetailView(DetailView):
@@ -141,17 +150,14 @@ class ItemDetailView(DetailView):
 
 class CategoryView(View):
     def get(self, *args, **kwargs):
-        category = Category.objects.get(slug=self.kwargs['slug'])
+        category = get_object_or_404(Category, slug=self.kwargs['slug'])
         item = Item.objects.filter(category=category, is_active=True)
-        # Fetch all top-level categories with their subcategories
-        categories = Category.objects.filter(is_active=True, parent=None).prefetch_related('subcategories')
         context = {
             'object_list': item,
             'category_title': category,
             'category_description': category.description,
             'category_image': category.image,
-            'categories': categories,  # Add categories to context
-            'current_category': category,  # To highlight the active category
+            'current_category': category,  # For highlighting active category
         }
         return render(self.request, "category.html", context)
 
